@@ -8,8 +8,7 @@ let puntajesActuales = {
 };
 
 // 🔥 URL de tu Google Apps Script (la que me diste)
-const SCRIPT_URL = "https://script.google.com/a/macros/jaliscoedu.mx/s/AKfycbzBBO9n4RhTWlNVN9GrheL6iulEmrt4zxDaVU4XMxoyyeSfi6CYqNmDfbkYaHGcvoN7/exec";
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3o5qY9xk4IutVSw6nWoroxAPsyasOUM-BqWn9S_IGyWoPmibmxDBg1E1HuC_6W-ja1A/exec";
 function seleccionarNivel(componente, nivel) {
     puntajesActuales[componente] = parseInt(nivel);
     document.querySelectorAll(`.btn-nivel[data-componente="${componente}"]`).forEach(btn => {
