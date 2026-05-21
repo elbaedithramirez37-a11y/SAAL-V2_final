@@ -7,8 +7,8 @@ let puntajesActuales = {
     comprension: 0
 };
 
-// 🔥 URL de tu Google Apps Script (la que me diste)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3o5qY9xk4IutVSw6nWoroxAPsyasOUM-BqWn9S_IGyWoPmibmxDBg1E1HuC_6W-ja1A/exec";
+
 function seleccionarNivel(componente, nivel) {
     puntajesActuales[componente] = parseInt(nivel);
     document.querySelectorAll(`.btn-nivel[data-componente="${componente}"]`).forEach(btn => {
@@ -79,7 +79,9 @@ function verificarComprension(grado) {
     return nivelComprension;
 }
 
+// Versión CORREGIDA de envío (basada en la prueba que funcionó)
 async function enviarDatosACEMEJ(grado, cct, zonaEscolar, puntajeTotal, nivel) {
+    // Construir el payload EXACTAMENTE como en la prueba manual
     const payload = {
         fecha: new Date().toLocaleDateString('es-MX'),
         cct: cct,
@@ -96,17 +98,17 @@ async function enviarDatosACEMEJ(grado, cct, zonaEscolar, puntajeTotal, nivel) {
     };
 
     try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
         console.log("✅ Datos enviados a CEMEJ correctamente");
+        alert("✅ Datos enviados automáticamente a CEMEJ");
     } catch (error) {
-        console.error("❌ Error al enviar datos:", error);
+        console.error("❌ Error al enviar:", error);
+        alert("❌ Hubo un error al enviar los datos. Por favor, contacta a soporte.");
     }
 }
 
@@ -117,18 +119,11 @@ function generarFicha(nombreAlumno, grado) {
     }
     
     let cct = prompt("Ingresa el CCT de la escuela (ejemplo: 14DPR1234A):");
-    if (!cct || cct.trim() === "") {
-        alert("El CCT es necesario.");
-        return;
-    }
+    if (!cct || cct.trim() === "") return;
     
     let zonaEscolar = prompt("Ingresa la zona escolar (ejemplo: Zona 05):");
-    if (!zonaEscolar || zonaEscolar.trim() === "") {
-        alert("La zona escolar es necesaria.");
-        return;
-    }
+    if (!zonaEscolar || zonaEscolar.trim() === "") return;
     
-    let fecha = new Date().toLocaleDateString('es-MX');
     let total = 0;
     for (let c in puntajesActuales) {
         total += puntajesActuales[c];
@@ -136,9 +131,10 @@ function generarFicha(nombreAlumno, grado) {
     
     let nivelTexto = document.getElementById("nivel-general").innerText;
     
-    // Enviar datos automáticamente a CEMEJ
+    // Enviar datos
     enviarDatosACEMEJ(grado, cct, zonaEscolar, total, nivelTexto);
     
+    let fecha = new Date().toLocaleDateString('es-MX');
     let recomendaciones = "";
     if (puntajesActuales.fluidez <= 1) recomendaciones += "<li>🔴 Fluidez: " + recomendacionesPorComponente.fluidez + "</li>";
     if (puntajesActuales.precision <= 1) recomendaciones += "<li>🔴 Precisión: " + recomendacionesPorComponente.precision + "</li>";
@@ -147,34 +143,33 @@ function generarFicha(nombreAlumno, grado) {
     if (puntajesActuales.seguridad <= 1) recomendaciones += "<li>🔴 Seguridad y disposición: " + recomendacionesPorComponente.seguridad + "</li>";
     if (puntajesActuales.comprension <= 1) recomendaciones += "<li>🔴 Comprensión lectora: " + recomendacionesPorComponente.comprension + "</li>";
     
-    if (recomendaciones === "") recomendaciones = "<li>🟢 ¡Muy bien! Sigue practicando con lecturas diarias.</li>";
+    if (recomendaciones === "") recomendaciones = "<li>🟢 ¡Muy bien! Sigue practicando.</li>";
     
     let htmlFicha = `
         <div style="font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px; border: 2px solid #e85f2f; border-radius: 20px;">
-            <h2 style="color: #e85f2f;">📋 SAAL - Ficha diagnóstica de lectura</h2>
+            <h2 style="color: #e85f2f;">📋 SAAL - Ficha diagnóstica</h2>
             <p><strong>Alumno(a):</strong> ${nombreAlumno}</p>
             <p><strong>Grado:</strong> ${grado}° de primaria</p>
-            <p><strong>Fecha de evaluación:</strong> ${fecha}</p>
+            <p><strong>Fecha:</strong> ${fecha}</p>
             <p><strong>CCT:</strong> ${cct}</p>
             <p><strong>Zona escolar:</strong> ${zonaEscolar}</p>
             <hr>
             <h3>Resultado general:</h3>
             <p style="font-size: 1.5rem;">Puntaje total: ${total} / 18</p>
             <p>${nivelTexto}</p>
-            <h3>Puntaje por componente:</h3>
+            <h3>Puntajes:</h3>
             <ul>
                 <li>Fluidez: ${puntajesActuales.fluidez}/3</li>
                 <li>Precisión: ${puntajesActuales.precision}/3</li>
-                <li>Atención a palabras complejas: ${puntajesActuales.atencionPalabras}/3</li>
-                <li>Uso de la voz: ${puntajesActuales.usoVoz}/3</li>
-                <li>Seguridad y disposición: ${puntajesActuales.seguridad}/3</li>
-                <li>Comprensión lectora: ${puntajesActuales.comprension}/3</li>
+                <li>Atención: ${puntajesActuales.atencionPalabras}/3</li>
+                <li>Uso de voz: ${puntajesActuales.usoVoz}/3</li>
+                <li>Seguridad: ${puntajesActuales.seguridad}/3</li>
+                <li>Comprensión: ${puntajesActuales.comprension}/3</li>
             </ul>
             <h3>Recomendaciones:</h3>
             <ul>${recomendaciones}</ul>
             <hr>
-            <p style="font-size: 0.8rem;">SAAL: Sistema de Alerta y Acompañamiento LEO - Jalisco</p>
-            <p style="font-size: 0.7rem;">Versión 3.0 - Registro automático | Los datos han sido enviados a CEMEJ</p>
+            <p style="font-size: 0.8rem;">SAAL - Jalisco | Versión 3.0</p>
         </div>
     `;
     
