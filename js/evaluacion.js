@@ -79,9 +79,8 @@ function verificarComprension(grado) {
     return nivelComprension;
 }
 
-// Versión CORREGIDA de envío (basada en la prueba que funcionó)
+// Versión CORREGIDA - usa exactamente el mismo método que funcionó en la consola
 async function enviarDatosACEMEJ(grado, cct, zonaEscolar, puntajeTotal, nivel) {
-    // Construir el payload EXACTAMENTE como en la prueba manual
     const payload = {
         fecha: new Date().toLocaleDateString('es-MX'),
         cct: cct,
@@ -105,10 +104,10 @@ async function enviarDatosACEMEJ(grado, cct, zonaEscolar, puntajeTotal, nivel) {
             body: JSON.stringify(payload)
         });
         console.log("✅ Datos enviados a CEMEJ correctamente");
-        alert("✅ Datos enviados automáticamente a CEMEJ");
+        alert("✅ ¡Datos enviados automáticamente a CEMEJ! Revisa la hoja de cálculo.");
     } catch (error) {
         console.error("❌ Error al enviar:", error);
-        alert("❌ Hubo un error al enviar los datos. Por favor, contacta a soporte.");
+        alert("❌ Hubo un error al enviar los datos.");
     }
 }
 
@@ -131,7 +130,7 @@ function generarFicha(nombreAlumno, grado) {
     
     let nivelTexto = document.getElementById("nivel-general").innerText;
     
-    // Enviar datos
+    // Enviar datos automáticamente
     enviarDatosACEMEJ(grado, cct, zonaEscolar, total, nivelTexto);
     
     let fecha = new Date().toLocaleDateString('es-MX');
@@ -169,7 +168,7 @@ function generarFicha(nombreAlumno, grado) {
             <h3>Recomendaciones:</h3>
             <ul>${recomendaciones}</ul>
             <hr>
-            <p style="font-size: 0.8rem;">SAAL - Jalisco | Versión 3.0</p>
+            <p style="font-size: 0.8rem;">SAAL - Jalisco | Versión 3.0 - Registro automático</p>
         </div>
     `;
     
